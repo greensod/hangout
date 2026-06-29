@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>setup — generate shared bucket</title>
+<title>setup — firebase guide</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
 <style>
   body{
@@ -11,96 +11,217 @@
     background: linear-gradient(160deg,#2f1b46,#6b4e8e,#c2477c);
     min-height: 100vh;
     margin: 0;
+    padding: 24px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    box-sizing: border-box;
     color: #4a3464;
   }
   .card{
     background: #fff8f0;
     border-radius: 28px;
     border: 3px solid #f4c95d;
-    max-width: 480px;
+    max-width: 520px;
+    width: 100%;
     padding: 34px 30px;
-    text-align: center;
     box-shadow: 0 20px 60px -10px rgba(47,27,70,0.5);
   }
-  h1{ font-family:'Fredoka',sans-serif; color:#6b4e8e; font-size: 24px; }
+  h1{ font-family:'Fredoka',sans-serif; color:#6b4e8e; font-size: 26px; margin: 0 0 6px; text-align:center; }
+  .tagline{ text-align:center; font-size:14px; opacity:0.7; margin-bottom: 24px; }
+
+  .step{
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+  }
+  .step-num{
+    font-family:'Fredoka',sans-serif;
+    background: linear-gradient(135deg,#c2477c,#6b4e8e);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-body{ flex: 1; font-size: 14px; line-height: 1.6; }
+  .step-body strong{ color: #6b4e8e; }
+  .step-body a{ color: #c2477c; font-weight: 700; }
+
+  code{
+    background:#e3d3f7;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-family: monospace;
+  }
+  .url-example{
+    display: block;
+    margin: 6px 0 0;
+    background: #fff;
+    border: 2px dashed #d8c8f0;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #6b4e8e;
+    word-break: break-all;
+  }
+
+  .divider{
+    border: none;
+    border-top: 2px dashed #e3d3f7;
+    margin: 22px 0;
+  }
+
+  .paste-section{ text-align: center; }
+  .paste-section p{ font-size: 14px; margin: 0 0 10px; }
+  input[type="text"]{
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 999px;
+    border: 2px solid #e3d3f7;
+    font-family: 'Quicksand',sans-serif;
+    font-size: 14px;
+    color: #4a3464;
+    box-sizing: border-box;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus{ border-color: #c2477c; }
+
   button{
     font-family:'Fredoka',sans-serif;
     font-weight: 600;
     border: none;
     border-radius: 999px;
-    padding: 13px 26px;
+    padding: 12px 26px;
     background: linear-gradient(135deg,#c2477c,#6b4e8e);
     color: #fff;
     cursor: pointer;
     font-size: 15px;
     margin-top: 10px;
+    transition: opacity 0.2s, transform 0.15s;
   }
-  button:disabled{ opacity:0.5; cursor:not-allowed; }
-  .result{
-    margin-top: 20px;
-    padding: 14px;
+  button:hover{ transform: translateY(-1px); }
+  button:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+
+  .snippet{
+    margin-top: 14px;
     background: #fff;
     border: 2px dashed #d8c8f0;
     border-radius: 14px;
-    font-weight: 700;
-    word-break: break-all;
+    padding: 14px 16px;
+    font-family: monospace;
+    font-size: 13px;
+    text-align: left;
     display: none;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #4a3464;
   }
-  .steps{ text-align:left; font-size: 14px; line-height: 1.6; margin-top: 16px; }
-  code{ background:#e3d3f7; padding: 2px 6px; border-radius: 6px; }
+  .snippet .highlight{ color: #c2477c; font-weight: 700; }
+  .copy-wrap{ text-align:center; }
 </style>
 </head>
 <body>
   <div class="card">
     <h1>🔑 one-time setup</h1>
-    <p>click below to create the shared storage bucket all 4 of you will use.</p>
-    <p style="font-size:13px;opacity:0.75;">kvdb.io asks for an email just to create the bucket — any address works, it's not used for anything in this app.</p>
-    <input type="email" id="email" placeholder="you@example.com" style="width:100%;padding:11px 14px;border-radius:999px;border:2px solid #e3d3f7;font-family:'Quicksand',sans-serif;font-size:14px;margin-top:6px;box-sizing:border-box;" />
-    <br/>
-    <button id="go">generate our bucket ✨</button>
-    <div class="result" id="result"></div>
-    <div class="steps">
-      <ol>
-        <li>copy the ID above</li>
-        <li>open <code>config.js</code> in your project</li>
-        <li>replace <code>PASTE_YOUR_BUCKET_ID_HERE</code> with it</li>
-        <li>save, then deploy (or redeploy) to Vercel</li>
-        <li>only do this once — all 4 friends share the same ID</li>
-      </ol>
+    <p class="tagline">takes ~2 minutes • free forever • no credit card</p>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a>
+        and sign in with any Google account.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        Click <strong>"Add project"</strong> → give it any name (e.g. <em>hangout-planner</em>)
+        → disable Google Analytics → click <strong>"Create project"</strong>.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        In the left sidebar: <strong>Build → Realtime Database → Create Database</strong>
+        → pick any region → choose <strong>"Start in test mode"</strong> → click <strong>Enable</strong>.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        You'll see your database URL at the top — it looks like:<br>
+        <span class="url-example">https://hangout-planner-a1b2c-default-rtdb.firebaseio.com</span>
+        Copy that whole URL.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        Paste it below 👇 to generate the line you need for <code>config.js</code>.
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="paste-section">
+      <p>paste your Firebase database URL:</p>
+      <input type="text" id="db-url" placeholder="https://your-app-default-rtdb.firebaseio.com" />
+      <br>
+      <button id="gen-btn">generate config line ✨</button>
+      <div class="snippet" id="snippet"></div>
+      <div class="copy-wrap"><button id="copy-btn" style="display:none;font-size:13px;padding:9px 20px;margin-top:8px;">copy to clipboard 📋</button></div>
+    </div>
+
+    <hr class="divider" />
+
+    <div style="font-size:13px;opacity:0.75;text-align:center;line-height:1.6;">
+      After pasting the line into <code>config.js</code>, save the file and redeploy to Vercel.<br>
+      Only <strong>one person</strong> needs to do this — everyone else just opens the shared link!
     </div>
   </div>
 
 <script>
-document.getElementById("go").addEventListener("click", async () => {
-  const btn = document.getElementById("go");
-  const result = document.getElementById("result");
-  const email = document.getElementById("email").value.trim() || "pookie@example.com";
-  btn.disabled = true;
-  btn.textContent = "conjuring...";
-  try {
-    const res = await fetch("https://kvdb.io/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "email=" + encodeURIComponent(email)
-    });
-    const text = (await res.text()).trim();
-    if (!res.ok || !text || text.length > 60) {
-      throw new Error(text || ("status " + res.status));
-    }
-    // kvdb returns just the bucket ID as plain text
-    const bucketId = text.split("/").pop();
-    result.style.display = "block";
-    result.textContent = bucketId;
-    btn.textContent = "done! 🎉";
-  } catch (err) {
-    result.style.display = "block";
-    result.textContent = "couldn't create a bucket (" + err.message + "). try again, or visit kvdb.io directly.";
-    btn.disabled = false;
-    btn.textContent = "generate our bucket ✨";
+const genBtn = document.getElementById("gen-btn");
+const copyBtn = document.getElementById("copy-btn");
+const snippet = document.getElementById("snippet");
+let configLine = "";
+
+genBtn.addEventListener("click", () => {
+  const url = document.getElementById("db-url").value.trim().replace(/\/$/, "");
+  if (!url.startsWith("https://") || !url.includes("firebaseio.com")) {
+    snippet.style.display = "block";
+    snippet.innerHTML = "⚠️ that doesn't look like a Firebase URL — it should start with https:// and contain firebaseio.com";
+    copyBtn.style.display = "none";
+    return;
   }
+  configLine = `  FIREBASE_DB_URL: "${url}",`;
+  snippet.style.display = "block";
+  snippet.innerHTML = `In <strong>config.js</strong>, replace the placeholder line with:\n\n<span class="highlight">${configLine}</span>`;
+  copyBtn.style.display = "inline-block";
+});
+
+copyBtn.addEventListener("click", () => {
+  navigator.clipboard.writeText(configLine).then(() => {
+    copyBtn.textContent = "copied! 💌";
+    setTimeout(() => copyBtn.textContent = "copy to clipboard 📋", 1800);
+  }).catch(() => {
+    prompt("copy this:", configLine);
+  });
 });
 </script>
 </body>

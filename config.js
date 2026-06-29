@@ -17,7 +17,7 @@
 // perfect for a one-time hangout planning session.
 
 const CONFIG = {
-  BUCKET_ID: "EVM7TQvAmhZfRkbuwTCp8C",
+  FIREBASE_URL: "https://hangout-planner-936a5-default-rtdb.firebaseio.com/",
   STATE_KEY: "plan-state",
   POLL_INTERVAL_MS: 4000
 };

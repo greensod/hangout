@@ -282,7 +282,7 @@ function renderResults(state) {
   const syncStatus = document.getElementById("sync-status");
 
   syncStatus.textContent = Storage.isOffline()
-    ? "⚠️ couldn't reach the shared scroll — set up your bucket ID in config.js (see setup.html)"
+    ? "⚠️ couldn't reach the shared scroll — set up your blob ID in config.js (see setup.html)"
     : "🔄 syncing live with your friends...";
 
   const names = Object.keys(state.proposals);

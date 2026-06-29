@@ -1,42 +1,38 @@
 // ============================================
-// STORAGE — talks to kvdb.io so all 4 friends share state
+// STORAGE — talks to Firebase Realtime Database
+// so all 4 friends share the same state
 // ============================================
 
 const Storage = (() => {
 
-  function baseUrl() {
-    return `https://kvdb.io/${CONFIG.BUCKET_ID}/${CONFIG.STATE_KEY}`;
+  function url() {
+    return `${CONFIG.FIREBASE_URL}/${CONFIG.STATE_KEY}.json`;
   }
 
   function defaultState() {
     return {
-      proposals: {}, // name -> { date, activityId, activityLabel, submittedAt }
-      votes: {}      // voterName -> proposalOwnerName
+      proposals: {},
+      votes: {}
     };
   }
 
   let lastKnownGood = null;
   let offline = false;
 
+  function notConfigured() {
+    return !CONFIG.FIREBASE_URL || CONFIG.FIREBASE_URL.includes("PASTE_YOUR");
+  }
+
   async function getState() {
-    if (CONFIG.BUCKET_ID === "PASTE_YOUR_BUCKET_ID_HERE") {
+    if (notConfigured()) {
       offline = true;
       return lastKnownGood || defaultState();
     }
     try {
-      const res = await fetch(baseUrl(), { cache: "no-store" });
-      if (res.status === 404) {
-        offline = false;
-        // Only treat as "nothing submitted yet" if we don't already have
-        // a better local copy — otherwise a brief timing hiccup right
-        // after a write could wipe out data we just saved.
-        if (!lastKnownGood) lastKnownGood = defaultState();
-        return lastKnownGood;
-      }
+      const res = await fetch(url(), { cache: "no-store" });
       if (!res.ok) throw new Error("bad status " + res.status);
-      const text = await res.text();
-      const parsed = text ? JSON.parse(text) : defaultState();
-      // defensive merge in case of partial/old shape
+      const data = await res.json();
+      const parsed = data || defaultState();
       parsed.proposals = parsed.proposals || {};
       parsed.votes = parsed.votes || {};
       offline = false;
@@ -51,14 +47,14 @@ const Storage = (() => {
 
   async function setState(state) {
     lastKnownGood = state;
-    if (CONFIG.BUCKET_ID === "PASTE_YOUR_BUCKET_ID_HERE") {
+    if (notConfigured()) {
       offline = true;
       return false;
     }
     try {
-      const res = await fetch(baseUrl(), {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
+      const res = await fetch(url(), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(state)
       });
       if (!res.ok) throw new Error("bad status " + res.status);
@@ -71,7 +67,6 @@ const Storage = (() => {
     }
   }
 
-  // read-modify-write helper to reduce (not eliminate) race conditions
   async function update(mutateFn) {
     const current = await getState();
     const next = mutateFn(current);
