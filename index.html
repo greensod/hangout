@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>✨ Our Royal Hangout Quest ✨</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%91%91%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Caveat:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ambient sparkle layer -->
+  <div id="sparkle-layer" aria-hidden="true"></div>
+  <div id="confetti-layer" aria-hidden="true"></div>
+
+  <div id="app">
+
+    <!-- SCREEN 1 : NAME -->
+    <section class="screen active" id="screen-name">
+      <div class="storybook-card">
+        <p class="eyebrow">chapter one</p>
+        <h1 class="title">who goes there? 👑</h1>
+        <p class="subtitle">type your name, royal friend, so we know who wished for what~</p>
+        <form id="form-name" autocomplete="off">
+          <input type="text" id="input-name" maxlength="20" placeholder="your name..." required />
+          <button type="submit" class="btn btn-primary">that's me! 🦋</button>
+        </form>
+        <p class="hint" id="name-hint"></p>
+      </div>
+    </section>
+
+    <!-- SCREEN 2 : INVITE -->
+    <section class="screen" id="screen-invite">
+      <div class="storybook-card">
+        <p class="eyebrow">chapter two</p>
+        <h1 class="title">hiii <span id="greet-name">pookie</span>! 🌸</h1>
+        <p class="subtitle">a little quest awaits...</p>
+        <div class="invite-actions">
+          <button class="btn btn-primary btn-big" id="btn-lets-plan">let's plan a day out! 💫</button>
+          <button class="btn btn-ghost" id="btn-not-now">not now</button>
+        </div>
+        <p class="funny-text" id="funny-text">hehe... you cannot escape that easily~ 😈🌸</p>
+      </div>
+    </section>
+
+    <!-- SCREEN 3 : CALENDAR -->
+    <section class="screen" id="screen-calendar">
+      <div class="storybook-card storybook-card-wide">
+        <p class="eyebrow">chapter three</p>
+        <h1 class="title">pick our magical day ✨</h1>
+        <p class="subtitle">somewhere in the kingdom of 2026...</p>
+
+        <div class="cal-nav">
+          <button class="btn-icon" id="cal-prev" aria-label="previous month">‹</button>
+          <h2 id="cal-month-label">January 2026</h2>
+          <button class="btn-icon" id="cal-next" aria-label="next month">›</button>
+        </div>
+
+        <div class="cal-weekdays">
+          <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+
+        <p class="selected-date" id="selected-date-text">no day chosen yet~</p>
+        <button class="btn btn-primary" id="btn-date-next" disabled>onward! 🦋</button>
+      </div>
+    </section>
+
+    <!-- SCREEN 4 : ACTIVITY -->
+    <section class="screen" id="screen-activity">
+      <div class="storybook-card storybook-card-wide">
+        <p class="eyebrow">chapter four</p>
+        <h1 class="title">what shall we do, my royals? 👑</h1>
+        <p class="subtitle">choose your heart's desire</p>
+
+        <div class="activity-grid" id="activity-grid"></div>
+
+        <input type="text" id="activity-other-input" class="other-input hidden" maxlength="40" placeholder="tell us your idea..." />
+
+        <button class="btn btn-primary" id="btn-activity-next" disabled>make it official! 🪄</button>
+      </div>
+    </section>
+
+    <!-- SCREEN 5 : RESULTS / VOTING -->
+    <section class="screen" id="screen-results">
+      <div class="storybook-card storybook-card-wide">
+        <p class="eyebrow">final chapter</p>
+        <h1 class="title">behold, the royal wishes 📜</h1>
+        <p class="subtitle" id="results-subtitle">cast your vote for the plan you love most</p>
+
+        <div class="proposals-list" id="proposals-list"></div>
+
+        <div class="winner-banner hidden" id="winner-banner">
+          <p>👑 currently leading the kingdom's heart 👑</p>
+          <h2 id="winner-text">—</h2>
+        </div>
+
+        <div class="results-footer">
+          <button class="btn btn-ghost btn-small" id="btn-reset-all">↺ start a new quest</button>
+        </div>
+        <p class="sync-status" id="sync-status"></p>
+      </div>
+    </section>
+
+  </div>
+
+<script src="config.js"></script>
+<script src="storage.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

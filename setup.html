@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>setup — generate shared bucket</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body{
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(160deg,#2f1b46,#6b4e8e,#c2477c);
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a3464;
+  }
+  .card{
+    background: #fff8f0;
+    border-radius: 28px;
+    border: 3px solid #f4c95d;
+    max-width: 480px;
+    padding: 34px 30px;
+    text-align: center;
+    box-shadow: 0 20px 60px -10px rgba(47,27,70,0.5);
+  }
+  h1{ font-family:'Fredoka',sans-serif; color:#6b4e8e; font-size: 24px; }
+  button{
+    font-family:'Fredoka',sans-serif;
+    font-weight: 600;
+    border: none;
+    border-radius: 999px;
+    padding: 13px 26px;
+    background: linear-gradient(135deg,#c2477c,#6b4e8e);
+    color: #fff;
+    cursor: pointer;
+    font-size: 15px;
+    margin-top: 10px;
+  }
+  button:disabled{ opacity:0.5; cursor:not-allowed; }
+  .result{
+    margin-top: 20px;
+    padding: 14px;
+    background: #fff;
+    border: 2px dashed #d8c8f0;
+    border-radius: 14px;
+    font-weight: 700;
+    word-break: break-all;
+    display: none;
+  }
+  .steps{ text-align:left; font-size: 14px; line-height: 1.6; margin-top: 16px; }
+  code{ background:#e3d3f7; padding: 2px 6px; border-radius: 6px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔑 one-time setup</h1>
+    <p>click below to create the shared storage bucket all 4 of you will use.</p>
+    <p style="font-size:13px;opacity:0.75;">kvdb.io asks for an email just to create the bucket — any address works, it's not used for anything in this app.</p>
+    <input type="email" id="email" placeholder="you@example.com" style="width:100%;padding:11px 14px;border-radius:999px;border:2px solid #e3d3f7;font-family:'Quicksand',sans-serif;font-size:14px;margin-top:6px;box-sizing:border-box;" />
+    <br/>
+    <button id="go">generate our bucket ✨</button>
+    <div class="result" id="result"></div>
+    <div class="steps">
+      <ol>
+        <li>copy the ID above</li>
+        <li>open <code>config.js</code> in your project</li>
+        <li>replace <code>PASTE_YOUR_BUCKET_ID_HERE</code> with it</li>
+        <li>save, then deploy (or redeploy) to Vercel</li>
+        <li>only do this once — all 4 friends share the same ID</li>
+      </ol>
+    </div>
+  </div>
+
+<script>
+document.getElementById("go").addEventListener("click", async () => {
+  const btn = document.getElementById("go");
+  const result = document.getElementById("result");
+  const email = document.getElementById("email").value.trim() || "pookie@example.com";
+  btn.disabled = true;
+  btn.textContent = "conjuring...";
+  try {
+    const res = await fetch("https://kvdb.io/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "email=" + encodeURIComponent(email)
+    });
+    const text = (await res.text()).trim();
+    if (!res.ok || !text || text.length > 60) {
+      throw new Error(text || ("status " + res.status));
+    }
+    // kvdb returns just the bucket ID as plain text
+    const bucketId = text.split("/").pop();
+    result.style.display = "block";
+    result.textContent = bucketId;
+    btn.textContent = "done! 🎉";
+  } catch (err) {
+    result.style.display = "block";
+    result.textContent = "couldn't create a bucket (" + err.message + "). try again, or visit kvdb.io directly.";
+    btn.disabled = false;
+    btn.textContent = "generate our bucket ✨";
+  }
+});
+</script>
+</body>
+</html>
