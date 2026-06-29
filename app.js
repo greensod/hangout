@@ -39,7 +39,7 @@ function showScreen(id) {
 // ---------- ambient sparkles ----------
 function initSparkles() {
   const layer = document.getElementById("sparkle-layer");
-  const symbols = ["✨", "💫", "⭐", "🌸", "🌷"];
+  const symbols = ["✨", "💫", "⭐", "💖", "🌸"];
   const count = window.innerWidth < 600 ? 14 : 24;
   for (let i = 0; i < count; i++) {
     const el = document.createElement("span");
@@ -57,7 +57,7 @@ function initSparkles() {
 
 function spawnConfetti() {
   const layer = document.getElementById("confetti-layer");
-  const symbols = ["🎉", "👑", "✨", "🌷", "💫"];
+  const symbols = ["🎉", "👑", "💖", "✨", "🌷", "💫"];
   for (let i = 0; i < 36; i++) {
     const el = document.createElement("span");
     el.className = "confetti-bit";
@@ -175,7 +175,7 @@ function selectDate(dateObj, cellEl) {
   const label = `${weekdayNames[dateObj.getDay()]}, ${monthNames[dateObj.getMonth()]} ${dateObj.getDate()}, ${YEAR}`;
 
   selectedDate = { iso: isoOf(dateObj), label };
-  document.getElementById("selected-date-text").textContent = `📋 ${label}`;
+  document.getElementById("selected-date-text").textContent = `💖 ${label}`;
   document.getElementById("btn-date-next").disabled = false;
 }
 
@@ -282,7 +282,7 @@ function renderResults(state) {
   const syncStatus = document.getElementById("sync-status");
 
   syncStatus.textContent = Storage.isOffline()
-    ? "⚠️ couldn't reach the shared scroll — set up your blob ID in config.js (see setup.html)"
+    ? "⚠️ couldn't reach the shared scroll — set up your bucket ID in config.js (see setup.html)"
     : "🔄 syncing live with your friends...";
 
   const names = Object.keys(state.proposals);
@@ -374,25 +374,36 @@ function escapeHtml(str) {
 }
 
 function initResultsScreen() {
-  document.getElementById("btn-copy-link").addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.origin + window.location.pathname);
-      const btn = document.getElementById("btn-copy-link");
-      const old = btn.textContent;
-      btn.textContent = "copied! 💌";
-      setTimeout(() => btn.textContent = old, 1800);
-    } catch {
-      alert("couldn't copy — just share the page URL manually!");
-    }
-  });
+  const copyBtn = document.getElementById("btn-copy-link");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.origin + window.location.pathname);
+        const old = copyBtn.textContent;
+        copyBtn.textContent = "copied! 💌";
+        setTimeout(() => copyBtn.textContent = old, 1800);
+      } catch {
+        alert("couldn't copy — just share the page URL manually!");
+      }
+    });
+  } else {
+    console.warn("btn-copy-link not found in HTML");
+  }
 
-  document.getElementById("btn-reset-all").addEventListener("click", async () => {
-    const ok = confirm("this clears EVERYONE's picks and votes so you can start a new quest. continue?");
-    if (!ok) return;
-    await Storage.setState(Storage.defaultState());
-    localStorage.removeItem("psd_name");
-    location.reload();
-  });
+  const resetBtn = document.getElementById("btn-reset-all");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", async () => {
+      const ok = confirm("this clears EVERYONE's picks and votes so you can start a new quest. continue?");
+      if (!ok) return;
+      resetBtn.disabled = true;
+      resetBtn.textContent = "clearing...";
+      await Storage.setState(Storage.defaultState());
+      localStorage.removeItem("psd_name");
+      location.reload();
+    });
+  } else {
+    console.warn("btn-reset-all not found in HTML");
+  }
 }
 
 // ---------- boot ----------
